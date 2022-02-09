@@ -6,6 +6,10 @@ repositories {
     mavenCentral()
 }
 
+//?????
+//def slf4jVersion = "1.7.32"
+
+
 dependencies {
     testImplementation(
             'com.codeborne:selenide:6.2.1',
@@ -13,6 +17,11 @@ dependencies {
     )
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.8.2')
 }
+
+//fix: кириллица
+//tasks.withType(JavaCompile) {
+//    options.encoding = 'UTF-8'
+//}
 
 test {
     useJUnitPlatform()

@@ -1,102 +1,86 @@
 package guru.qa;
 
+import com.codeborne.selenide.Configuration; //"1920x1080"
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
-//import static com.codeborne.selenide.Selenide.
 
+@DisplayName("Это страница Practice Form")
+public class PracticeFormTests {
 
-        @DisplayName("Это страница Practice Form")
-            public class PracticeFormTests {
-
-            @BeforeAll
-            static void openPage() {
-                open("https://demoqa.com/automation-practice-form/");
-                $(byText("Student Registration Form"));
-            }
-
-
-    /*
-        @BeforeEach
-
-        @AfterEach  //например сделать скрин и почистить за собой
-        void afterEach() {
-            System.out.println("    @AfterEach method!");
-        }
-
-        @AfterAll //например закрыть браузер
-        static void afterAll() {
-            System.out.println("@AfterAll method!");
-        }
-    */
+    @BeforeAll
+    static void openPage() {
+        Configuration.browserSize = "1920x1080";
+        open("https://demoqa.com/automation-practice-form/");
+        $(byText("Student Registration Form")); //проверка заголовка страницы
+    }
 
     @Test
-    void selenideStringsTests() {
+    void studentRegistrationFormTests() {
         $("[id=firstName]").setValue("Olga");
         $("[id=lastName]").setValue("Kos");
-        $("#userEmail").setValue("ok@ya.ru");
-        $("#userNumber").setValue("8125560781");
-        $("#currentAddress").setValue("Moskovskoe 1");
-    }
+        $("#userEmail").setValue("ok@yandex.ru");
+        $(byText("Female")).click(); //Gender // todo возможны вараинты, подумать
+        $("#userNumber").setValue("8125560781"); //Mobile(10 Digits)
 
-    //калнд
-    @Test
-    void selenideDateOfBirthTest() {
+        //Date of Birth
         $("#dateOfBirthInput").click();
-        $(".react-datepicker__month-select").selectOptionByValue("9");
-        $(".react-datepicker__year-select").selectOptionByValue("1990");
+        $(".react-datepicker__month-select").selectOptionByValue("3"); //it's April
+        $(".react-datepicker__year-select").selectOptionByValue("2000");
         $$(".react-datepicker__day").find(text("23")).click();
-    }
+
+        //Subjects (мульти-список)
+        //$("#subjectsInput").scrollTo().setValue("English"); // не сработал если >1
+        $("#subjectsInput").setValue("English").pressEnter();
+        $("#subjectsInput").setValue("History").pressEnter();
+
+        //Hobbies (check-boxes)
+        $("#hobbies-checkbox-1").scrollTo().parent().click();
+        $(byText("Reading")).click();
+        $("#hobbies-checkbox-3").parent().click(); // todo возможны вараинты, подумать
+
+        //Picture Select picture
+        $("#uploadPicture").uploadFromClasspath("pytpng.png");
+
+        $("#currentAddress").setValue("Moskovskoe 1");
+
+        //State and City
+        $("#state").click();
+        $(byText("Haryana")).click();
+        $("#city").click();
+        $(byText("Panipat")).click();
 
 /*
-    @Test
-    void selenideUploadTest() {
-        $("#uploadPicture").uploadFromClasspath("img1.jpg");
-    }
+        //2 X-вариант, тоже рабочий
+        $x("//*[@id ='state']").click(); // попали в поле
+        $x("//*[text() = 'Haryana']").hover().click();
+        $x("//*[@id ='city']").click();
+        $x("//*[text() ='Panipat']").hover().click();
 */
 
-@Test
-void selenideMultyListTest() {
-    $("#subjectsInput").scrollTo().setValue("English");
-}
-
-            //Hobbies
-            @Test
-            void selenideHobbiesTest() {
-                $("#hobbies-checkbox-1").scrollTo().parent().click();
-                $("#hobbies-checkbox-2").parent().click();
-                $("#hobbies-checkbox-3").parent().click();
-            }
-
-
-    //State and City
-    @Test
-    void selenideFilters1Test() {
-        $(".css-tlfecz-indicatorContainer").scrollTo().click(); //встать в поле Штат
-        $(".css-1g6gooi #react-select-3-input").setValue("Raja").pressEnter();
-        $(".css-1g6gooi #react-select-4-input").setValue("Jaisel").pressEnter();
-
-        //$("#state").setValue("Haryana").pressEnter();
-        //$(".css-1hwfws3 #react-select-3-input").setValue("Haryana").pressEnter();
-       // $("#city").scrollTo().click(); //встать в поле City
-       // $(".css-yk16xz-control #react-select-2-input").setValue("Panipat").pressEnter();
-    }
-
-    @Test
-    void submiteButtonTest() {
-        $("#submit").scrollTo().click();
+        //button // todo возможны вараинты, подумать
         //$("#submit").click();
-    }
+        $("#submit").scrollTo().click(); //скролл на случай если кнопка загородена баннером
 
-    /*
-    @Test
-    void closeLargeModalButtonTest() {
-        $("#closeLargeModal").click();
-    }
-*/
+        //Checking
+        $(".table-responsive").shouldHave(
+                text("Olga Kos"),
+                text("ok@yandex.ru"),
+                text("Female"),
+                text("8125560781"),
+                text("23 April,2000"),
+                text("English, History"),
+                text("Sports, Reading, Music"),
+                text("pytpng.png"),
+                text("Moskovskoe 1"),
+                text("Haryana Panipat")
+        );
 
+        $("#closeLargeModal").click(); //button
+    }
 }
 
